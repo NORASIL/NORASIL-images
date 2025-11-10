@@ -1,14 +1,30 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
+import { config } from "dotenv";
+import { mkdirSync, existsSync } from "fs";
 import buildsRouter from "./routes/builds";
 import imagesRouter from "./routes/images";
 import uploadRouter from "./routes/upload";
+
+config(); // Load environment variables
+
+// Ensure required directories exist
+["uploads", "images"].forEach((dir) => {
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+    console.log(`Created directory: ${dir}`);
+  }
+});
 
 const app = new Hono();
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
+});
+
+app.get("/health", (c) => {
+  return c.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // Serve static files from the 'uploads' directory
@@ -22,10 +38,13 @@ app.route("/images", uploadRouter);
 app.route("/images", buildsRouter);
 app.route("/images", imagesRouter);
 
-const port = 3000;
-console.log(`Server is running on http://localhost:${port}`);
+const port = parseInt(process.env.PORT || "3000", 10);
+const host = process.env.HOST || "0.0.0.0";
+
+console.log(`Server is running on http://${host}:${port}`);
 
 serve({
   fetch: app.fetch,
   port,
+  hostname: host,
 });
