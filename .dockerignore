@@ -12,6 +12,4 @@ README.md
 .vscode
 .idea
 uploads/*
-images/*
 !uploads/.gitkeep
-!images/.gitkeep

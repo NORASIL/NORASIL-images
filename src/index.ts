@@ -37,11 +37,11 @@ app.get("/debug/files", (c) => {
         }
       });
     };
-    
+
     if (existsSync("images")) {
       walkDir("images");
     }
-    
+
     return c.json({
       total: files.length,
       files: files,
