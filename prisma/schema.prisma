@@ -1,5 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // Generate native query engine for the platform where build runs (Nixpacks/native)
+  binaryTargets = ["native"]
 }
 
 datasource db {
